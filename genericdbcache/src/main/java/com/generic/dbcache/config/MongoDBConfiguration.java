@@ -15,32 +15,6 @@ import com.mongodb.client.MongoCollection;
 @Configuration
 public final class MongoDBConfiguration {
 	
-	/*@Value("${mongodb.connection.uri}")
-	private String mongodbConnectionURI;
-	
-	@Value("${database.name}")
-	private String dataBaseName;
-	
-	@Primary
-	@Bean(name = "genericMongoClient")
-	public MongoClient genericMongoClient() {
-		final ConnectionString connectionString = new ConnectionString(mongodbConnectionURI);
-		final MongoClientSettings mongoClientSettings = MongoClientSettings.builder().applyConnectionString(connectionString).build();
-		return MongoClients.create(mongoClientSettings);
-	}
-
-	@Primary
-	@Bean(name = "genericMongoTemplate")
-	public MongoTemplate genericMongoTemplate() {
-		return new MongoTemplate(genericMongoClient(),dataBaseName);
-	}
-	
-	@Primary
-	@Bean(name = "genericMongoDatabase")
-	public MongoDatabase genericMongoDatabase() {
-		return genericMongoClient().getDatabase(dataBaseName);
-	}*/
-	
 	@Bean(name = "MongoRepositoryCacheDAO")
 	public <V extends AbstractValue> IGenericDBCacheDAO<String,V> mongoRepositoryCacheDAO(MongoRepository<GenericCollection<V>,String> repository) {
 		return new MongoRepositoryCacheDAOImpl<V>(repository);
