@@ -10,7 +10,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 
-public class MongoCollectionCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V,MongoCollection<GenericCollection<V>>> implements IGenericDBCacheDAO<String,V>{
+public class MongoCollectionCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V> implements IGenericDBCacheDAO<String,V>{
 
 	private MongoCollection<GenericCollection<V>> genericCollections;
 	

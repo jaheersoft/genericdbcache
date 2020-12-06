@@ -6,7 +6,7 @@ import com.generic.dbcache.dao.IGenericDBCacheDAO;
 import com.generic.dbcache.value.AbstractValue;
 import com.generic.dbcache.value.GenericCollection;
 
-public class MongoRepositoryCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V,MongoRepository<GenericCollection<V>,String>> implements IGenericDBCacheDAO<String,V> {
+public class MongoRepositoryCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V> implements IGenericDBCacheDAO<String,V> {
 
 	private MongoRepository<GenericCollection<V>,String> repository;
 	

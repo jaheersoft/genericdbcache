@@ -10,7 +10,7 @@ import com.generic.dbcache.util.MongoDBUtility;
 import com.generic.dbcache.value.AbstractValue;
 import com.generic.dbcache.value.GenericCollection;
 
-public class MongoTemplateCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V,MongoTemplate> implements IGenericDBCacheDAO<String,V> {
+public class MongoTemplateCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V> implements IGenericDBCacheDAO<String,V> {
 	
 	private MongoTemplate template;
 	
