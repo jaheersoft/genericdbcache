@@ -5,44 +5,44 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.generic.dbcache.dao.IGenericDBCacheDAO;
 import com.generic.dbcache.value.AbstractValue;
 import com.generic.dbcache.value.GenericCollection;
+import com.mongodb.annotations.ThreadSafe;
 
-public class MongoRepositoryCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V> implements IGenericDBCacheDAO<String,V> {
+@ThreadSafe
+public final class MongoRepositoryCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V,MongoRepository<GenericCollection<V>,String>> implements IGenericDBCacheDAO<String,V> {
 
-	private MongoRepository<GenericCollection<V>,String> repository;
-	
 	public MongoRepositoryCacheDAOImpl(MongoRepository<GenericCollection<V>,String> repository) {
-		this.repository = repository;
+		super(repository);
 	}
 	
 	@Override
-	public V insertIntoCache(String key, V value) {
-		return repository.insert(genericCollection(key, value)).getValue();
+	public final V insertIntoCache(String key, V value) {
+		return getCaller().insert(genericCollection(key, value)).getValue();
 	}
 
 	@Override
-	public V updateWithinCache(String key, V value) {
-		Optional<GenericCollection<V>> optionalGenericCollection = repository.findById(key);
+	public final V updateWithinCache(String key, V value) {
+		Optional<GenericCollection<V>> optionalGenericCollection = getCaller().findById(key);
 		if(optionalGenericCollection.isPresent()) {
 			GenericCollection<V> genericCollection = optionalGenericCollection.get();
 			genericCollection.value(value);
-			return repository.save(genericCollection).getValue();
+			return getCaller().save(genericCollection).getValue();
 		}
 		return genericCollection(key, value).getValue();
 	}
 
 	@Override
-	public boolean deleteFromCache(String key) {
-		Optional<GenericCollection<V>> optionalGenericCollection = repository.findById(key);
+	public final boolean deleteFromCache(String key) {
+		Optional<GenericCollection<V>> optionalGenericCollection = getCaller().findById(key);
 		if(optionalGenericCollection.isPresent()) {
-			repository.deleteById(key);
+			getCaller().deleteById(key);
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public V getFromCache(String key) {
-		Optional<GenericCollection<V>> optionalGenericCollection = repository.findById(key);
+	public final V getFromCache(String key) {
+		Optional<GenericCollection<V>> optionalGenericCollection = getCaller().findById(key);
 		if(optionalGenericCollection.isPresent()) {
 			return optionalGenericCollection.get().getValue();
 		}
@@ -50,7 +50,7 @@ public class MongoRepositoryCacheDAOImpl<V extends AbstractValue> extends Abstra
 	}
 
 	@Override
-	public boolean existsInsideCache(String key) {
-		return repository.existsById(key);
+	public final boolean existsInsideCache(String key) {
+		return getCaller().existsById(key);
 	}
 }

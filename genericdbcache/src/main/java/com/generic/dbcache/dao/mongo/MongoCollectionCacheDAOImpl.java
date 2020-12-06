@@ -5,50 +5,50 @@ import static com.mongodb.client.model.Filters.eq;
 import com.generic.dbcache.dao.IGenericDBCacheDAO;
 import com.generic.dbcache.value.AbstractValue;
 import com.generic.dbcache.value.GenericCollection;
+import com.mongodb.annotations.ThreadSafe;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 
-public class MongoCollectionCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V> implements IGenericDBCacheDAO<String,V>{
+@ThreadSafe
+public final class MongoCollectionCacheDAOImpl<V extends AbstractValue> extends AbstractMongoDBCacheDAO<V,MongoCollection<GenericCollection<V>>> implements IGenericDBCacheDAO<String,V>{
 
-	private MongoCollection<GenericCollection<V>> genericCollections;
-	
 	public MongoCollectionCacheDAOImpl(MongoCollection<GenericCollection<V>> genericCollections) {
-		this.genericCollections = genericCollections;
+		super(genericCollections);
 	}
 	
 	@Override
-	public V insertIntoCache(String key, V value) {
-		if(genericCollections.insertOne(genericCollection(key, value)).wasAcknowledged()) {
+	public final V insertIntoCache(String key, V value) {
+		if(getCaller().insertOne(genericCollection(key, value)).wasAcknowledged()) {
 			return getFromCache(key);
 		}
 		return value;
 	}
 
 	@Override
-	public V updateWithinCache(String key, V value) {
+	public final V updateWithinCache(String key, V value) {
 		Document filterById = new Document("_id",key);
 		FindOneAndReplaceOptions returnDocAfterReplace = new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER);
-		GenericCollection<V> genericCollection = genericCollections.find(eq("id",key)).first();
+		GenericCollection<V> genericCollection = getCaller().find(eq("id",key)).first();
 		genericCollection.value(value);
-		return genericCollections.findOneAndReplace(filterById, genericCollection,returnDocAfterReplace).getValue();
+		return getCaller().findOneAndReplace(filterById, genericCollection,returnDocAfterReplace).getValue();
 	}
 
 	@Override
-	public boolean deleteFromCache(String key) {
+	public final boolean deleteFromCache(String key) {
 		Document filterById = new Document("_id",key);
-		return genericCollections.deleteOne(filterById).wasAcknowledged();
+		return getCaller().deleteOne(filterById).wasAcknowledged();
 	}
 
 	@Override
-	public V getFromCache(String key) {
-		return genericCollections.find(eq("id",key)).first().getValue();
+	public final V getFromCache(String key) {
+		return getCaller().find(eq("id",key)).first().getValue();
 	}
 
 	@Override
-	public boolean existsInsideCache(String key) {
-		FindIterable<GenericCollection<V>> findIterable = genericCollections.find(eq("id",key));
+	public final boolean existsInsideCache(String key) {
+		FindIterable<GenericCollection<V>> findIterable = getCaller().find(eq("id",key));
 		if(findIterable != null) {
 			GenericCollection<V> genericCollection = findIterable.first();
 			if(genericCollection != null && genericCollection.getValue() != null) {
@@ -59,5 +59,4 @@ public class MongoCollectionCacheDAOImpl<V extends AbstractValue> extends Abstra
 		}
 		return false;
 	}
-
 }
