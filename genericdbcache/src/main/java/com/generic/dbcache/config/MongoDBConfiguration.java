@@ -12,10 +12,10 @@ import com.generic.dbcache.value.AbstractValue;
 import com.generic.dbcache.value.GenericCollection;
 import com.mongodb.client.MongoCollection;
 
-@Configuration
+//@Configuration
 public final class MongoDBConfiguration {
 
-	@Bean(name = "mongoRepositoryCacheDAO")
+	/*@Bean(name = "mongoRepositoryCacheDAO")
 	public <V extends AbstractValue> IGenericDBCacheDAO<String, V> mongoRepositoryCacheDAO(
 			MongoRepository<GenericCollection<V>, String> repository) {
 		return new MongoRepositoryCacheDAOImpl<V>(repository);
@@ -30,5 +30,5 @@ public final class MongoDBConfiguration {
 	public <V extends AbstractValue> IGenericDBCacheDAO<String, V> mongoCollectionCacheDAO(
 			MongoCollection<GenericCollection<V>> genericCollections) {
 		return new MongoCollectionCacheDAOImpl<V>(genericCollections);
-	}
+	}*/
 }

@@ -2,6 +2,8 @@ package com.generic.dbcache.dao.mongo;
 
 import org.bson.Document;
 import static com.mongodb.client.model.Filters.eq;
+
+import java.util.Date;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -21,7 +23,7 @@ public final class MongoCollectionCacheDAOImpl<V extends AbstractValue> extends
 
 	private final BiFunction<String, V, V> INSERT_INTO_CACHE_USING_MONGOCOLLECTION = (key, value) -> {
 		if (getCurrentMongoDBCaller().insertOne(newGenericCollection(key, value)).wasAcknowledged()) {
-			return getCurrentMongoDBCaller().find(eq("id", key)).first().getValue();
+			return getCurrentMongoDBCaller().find(eq("_id", key)).first().getValue();
 		}
 		return value;
 	};
@@ -30,8 +32,8 @@ public final class MongoCollectionCacheDAOImpl<V extends AbstractValue> extends
 		Document filterById = new Document("_id", key);
 		FindOneAndReplaceOptions returnDocAfterReplace = new FindOneAndReplaceOptions()
 				.returnDocument(ReturnDocument.AFTER);
-		GenericCollection<V> genericCollection = getCurrentMongoDBCaller().find(eq("id", key)).first();
-		genericCollection.value(value);
+		GenericCollection<V> genericCollection = getCurrentMongoDBCaller().find(eq("_id", key)).first();
+		genericCollection.value(value).updateAt(new Date()).updatedBy("CLIENT");
 		return getCurrentMongoDBCaller().findOneAndReplace(filterById, genericCollection, returnDocAfterReplace)
 				.getValue();
 	};
@@ -42,10 +44,10 @@ public final class MongoCollectionCacheDAOImpl<V extends AbstractValue> extends
 	};
 
 	private final Function<String, V> GET_FROM_CACHE_USING_MONGOCOLLECTION = (key) -> getCurrentMongoDBCaller()
-			.find(eq("id", key)).first().getValue();
+			.find(eq("_id", key)).first().getValue();
 
 	private final Predicate<String> EXISTS_INSIDE_CACHE_USING_MONGOCOLLECTION = (key) -> {
-		FindIterable<GenericCollection<V>> findIterable = getCurrentMongoDBCaller().find(eq("id", key));
+		FindIterable<GenericCollection<V>> findIterable = getCurrentMongoDBCaller().find(eq("_id", key));
 		if (findIterable != null) {
 			GenericCollection<V> genericCollection = findIterable.first();
 			if (genericCollection != null && genericCollection.getValue() != null) {

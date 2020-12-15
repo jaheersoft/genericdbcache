@@ -1,6 +1,5 @@
 package com.generic.dbcache.dao.mongo;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -10,7 +9,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import com.generic.dbcache.dao.IGenericDBCacheDAO;
 import com.generic.dbcache.exception.CacheException;
-import com.generic.dbcache.util.MongoDBUtility;
 import com.generic.dbcache.value.AbstractValue;
 import com.generic.dbcache.value.GenericCollection;
 import com.mongodb.annotations.ThreadSafe;
@@ -22,39 +20,37 @@ public final class MongoTemplateCacheDAOImpl<V extends AbstractValue> extends Ab
 	private final BiFunction<String, V, V> INSERT_INTO_CACHE_USING_MONGOTEMPLATE = (key,
 			value) -> getCurrentMongoDBCaller().insert(newGenericCollection(key, value)).getValue();
 
+	@SuppressWarnings("unchecked")
 	private final BiFunction<String, V, V> UPDATE_WITHIN_CACHE_USING_MONGOTEMPLATE = (key, value) -> {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("id").is(key));
-		Update update = MongoDBUtility.buildBaseUpdate(value);
-		return getCurrentMongoDBCaller().findAndModify(query, update, entityClass()).getValue();
+		query.addCriteria(Criteria.where("_id").is(key));
+		//Update update = MongoDBUtility.buildBaseUpdate(value);
+		Update update = new Update();
+		update.set("value", value);
+		return (V)getCurrentMongoDBCaller().findAndModify(query, update, GenericCollection.class).getValue();
 	};
 
 	private final Predicate<String> DELETE_FROM_CACHE_USING_MONGOTEMPLATE = (key) -> {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("id").is(key));
+		query.addCriteria(Criteria.where("_id").is(key));
 		return getCurrentMongoDBCaller().remove(query).wasAcknowledged();
 	};
 
+	@SuppressWarnings("unchecked")
 	private final Function<String, V> GET_FROM_CACHE_USING_MONGOTEMPLATE = (key) -> {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("id").is(key));
-		return getCurrentMongoDBCaller().findById(query, entityClass()).getValue();
+		query.addCriteria(Criteria.where("_id").is(key));
+		return (V) getCurrentMongoDBCaller().findOne(query, GenericCollection.class).getValue();
 	};
 
 	private final Predicate<String> EXISTS_INSIDE_CACHE_USING_MONGOTEMPLATE = (key) -> {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("id").is(key));
-		return getCurrentMongoDBCaller().exists(query, entityClass());
+		query.addCriteria(Criteria.where("_id").is(key));
+		return getCurrentMongoDBCaller().exists(query, GenericCollection.class);
 	};
 
 	public MongoTemplateCacheDAOImpl(MongoTemplate template) {
 		super(template);
-	}
-
-	@SuppressWarnings("unchecked")
-	private Class<GenericCollection<V>> entityClass() {
-		return ((Class<GenericCollection<V>>) ((ParameterizedType) getClass().getGenericSuperclass())
-				.getActualTypeArguments()[0]);
 	}
 
 	@Override

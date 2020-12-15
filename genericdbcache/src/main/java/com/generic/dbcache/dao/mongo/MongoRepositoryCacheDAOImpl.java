@@ -1,5 +1,6 @@
 package com.generic.dbcache.dao.mongo;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -23,7 +24,7 @@ public final class MongoRepositoryCacheDAOImpl<V extends AbstractValue>
 		Optional<GenericCollection<V>> optionalGenericCollection = getCurrentMongoDBCaller().findById(key);
 		if (optionalGenericCollection.isPresent()) {
 			GenericCollection<V> genericCollection = optionalGenericCollection.get();
-			genericCollection.value(value);
+			genericCollection.value(value).updateAt(new Date()).updatedBy("CLIENT");
 			return getCurrentMongoDBCaller().save(genericCollection).getValue();
 		}
 		return newGenericCollection(key, value).getValue();

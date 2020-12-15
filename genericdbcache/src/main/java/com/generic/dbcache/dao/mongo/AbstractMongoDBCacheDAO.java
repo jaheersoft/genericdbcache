@@ -1,5 +1,6 @@
 package com.generic.dbcache.dao.mongo;
 
+import java.util.Date;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -22,7 +23,8 @@ public abstract class AbstractMongoDBCacheDAO<V extends AbstractValue, C> {
 	}
 
 	public final GenericCollection<V> newGenericCollection(String key, V value) {
-		return new GenericCollection<V>().collectionId(key).value(value);
+		value.valueId(key + "-" + value.getClass().getName());
+		return new GenericCollection<V>().collectionId(key).value(value).createdAt(new Date()).createdBy("CLIENT");
 	}
 
 	public final V decorateInsertIntoCache(String key, V value, BiFunction<String, V, V> insertIntoCache)
