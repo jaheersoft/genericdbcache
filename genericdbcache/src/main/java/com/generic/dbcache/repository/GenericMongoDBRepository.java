@@ -6,6 +6,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 @NoRepositoryBean
-public interface GenericMongoDBRepository<V extends AbstractValue> extends MongoRepository<GenericCollection<V>,String>{
+public interface GenericMongoDBRepository<V extends AbstractValue>
+		extends MongoRepository<GenericCollection<V>, String> {
 
 }

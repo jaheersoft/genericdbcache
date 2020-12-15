@@ -14,19 +14,21 @@ import com.mongodb.client.MongoCollection;
 
 @Configuration
 public final class MongoDBConfiguration {
-	
-	@Bean(name = "MongoRepositoryCacheDAO")
-	public <V extends AbstractValue> IGenericDBCacheDAO<String,V> mongoRepositoryCacheDAO(MongoRepository<GenericCollection<V>,String> repository) {
+
+	@Bean(name = "mongoRepositoryCacheDAO")
+	public <V extends AbstractValue> IGenericDBCacheDAO<String, V> mongoRepositoryCacheDAO(
+			MongoRepository<GenericCollection<V>, String> repository) {
 		return new MongoRepositoryCacheDAOImpl<V>(repository);
 	}
-	
-	@Bean(name = "MongoTemplateCacheDAO")
-	public <V extends AbstractValue> IGenericDBCacheDAO<String,V> mongoTemplateCacheDAO(MongoTemplate template) {
+
+	@Bean(name = "mongoTemplateCacheDAO")
+	public <V extends AbstractValue> IGenericDBCacheDAO<String, V> mongoTemplateCacheDAO(MongoTemplate template) {
 		return new MongoTemplateCacheDAOImpl<V>(template);
 	}
-	
-	@Bean(name = "MongoTemplateCacheDAO")
-	public <V extends AbstractValue> IGenericDBCacheDAO<String,V> mongoCollectionCacheDAO(MongoCollection<GenericCollection<V>> genericCollections) {
+
+	@Bean(name = "mongoCollectionCacheDAO")
+	public <V extends AbstractValue> IGenericDBCacheDAO<String, V> mongoCollectionCacheDAO(
+			MongoCollection<GenericCollection<V>> genericCollections) {
 		return new MongoCollectionCacheDAOImpl<V>(genericCollections);
 	}
 }

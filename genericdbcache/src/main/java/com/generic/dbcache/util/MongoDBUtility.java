@@ -11,23 +11,25 @@ import com.mongodb.client.MongoDatabase;
 @ThreadSafe
 public final class MongoDBUtility {
 
-	private MongoDBUtility() {}
-	
-	public static <T> MongoCollection<T> genericMongoCollection(MongoDatabase mongoDatabase,String collectionName,Class<T> genericClass) {
-		return mongoDatabase.getCollection(collectionName,genericClass);
+	private MongoDBUtility() {
 	}
-	
+
+	public static <T> MongoCollection<T> genericMongoCollection(MongoDatabase mongoDatabase, String collectionName,
+			Class<T> genericClass) {
+		return mongoDatabase.getCollection(collectionName, genericClass);
+	}
+
 	public static <T> Update buildBaseUpdate(T t) {
 		Update update = new Update();
 		Field[] fields = t.getClass().getDeclaredFields();
-		for(Field field : fields) {
+		for (Field field : fields) {
 			field.setAccessible(true);
 			try {
 				Object value = field.get(t);
-				if(value != null) {
+				if (value != null) {
 					update.set(field.getName(), value);
 				}
-			} catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
